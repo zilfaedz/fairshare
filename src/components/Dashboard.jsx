@@ -1,8 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppData } from '../context/AppDataContext';
 
 const Dashboard = () => {
-    const { chores, expenses } = useAppData();
+    const { chores, expenses, user, budget } = useAppData();
+    const navigate = useNavigate();
 
     // Calculate stats
     const today = new Date().toISOString().split('T')[0];
@@ -13,14 +15,29 @@ const Dashboard = () => {
         .filter(expense => new Date(expense.date).getMonth() === currentMonth)
         .reduce((sum, expense) => sum + parseFloat(expense.amount || 0), 0);
 
+    const budgetRemaining = budget - monthlyExpense;
+
     const tasksCompleted = chores.filter(chore => chore.status === 'completed').length;
     const tasksOverdue = chores.filter(chore => chore.date < today && chore.status !== 'completed').length;
+
+    // Get upcoming chores
+    const upcomingChores = chores
+        .filter(chore => chore.date >= today && chore.status !== 'completed')
+        .sort((a, b) => new Date(a.date) - new Date(b.date))
+        .slice(0, 3);
+
+    const getDateLabel = (dateStr) => {
+        const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        if (dateStr === today) return 'Today';
+        if (dateStr === tomorrow) return 'Tomorrow';
+        return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    };
 
     return (
         <div className="dashboard-container">
             <div className="welcome-banner">
                 <div className="welcome-text">
-                    <h1>Hello, <strong>User!</strong></h1>
+                    <h1>Hello, <strong>{user.name}!</strong></h1>
                     <p>You're holding up your end of the bargain. Check your Chore Queue to keep the balance.</p>
                 </div>
                 <div className="welcome-circle"></div>
@@ -28,18 +45,33 @@ const Dashboard = () => {
 
             <div className="dashboard-grid">
                 <div className="dashboard-card personal-card">
-                    <h3>Personal Dashboard</h3>
-                    <p className="card-subtitle">View and manage your profile information and account details.</p>
+                    <h3>Upcoming Chores</h3>
+                    <p className="card-subtitle">Your next tasks to complete.</p>
                     <hr />
-                    <div className="info-group">
-                        <label>Email</label>
-                        <p className="info-value">user@email.com</p>
-                    </div>
-                    <div className="info-group">
-                        <label>Account status</label>
-                        <span className="status-badge active">Active</span>
-                    </div>
-                    <button className="card-button">View Details</button>
+                    {upcomingChores.length === 0 ? (
+                        <p style={{ color: '#666', fontStyle: 'italic' }}>No upcoming chores!</p>
+                    ) : (
+                        <div className="upcoming-chores-list">
+                            {upcomingChores.map(chore => (
+                                <div key={chore.id} style={{
+                                    marginBottom: '10px',
+                                    padding: '12px',
+                                    backgroundColor: '#FFF0F5',
+                                    borderRadius: '10px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <div>
+                                        <div style={{ fontWeight: 'bold', color: '#4A2C2C', marginBottom: '2px' }}>{chore.task}</div>
+                                        <div style={{ fontSize: '0.85rem', color: '#666' }}>{getDateLabel(chore.date)}</div>
+                                    </div>
+                                    <div style={{ fontSize: '0.9rem', fontWeight: '600', color: '#4A2C2C' }}>{chore.time}</div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <button className="card-button" style={{ marginTop: '15px' }} onClick={() => navigate('/chores')}>View All Chores</button>
                 </div>
 
                 <div className="dashboard-card stats-card">
@@ -56,11 +88,11 @@ const Dashboard = () => {
                     </div>
                     <div className="stat-row">
                         <span>Budget Remaining</span>
-                        <span className="stat-badge budget">$ 760</span>
+                        <span className="stat-badge budget">${budgetRemaining.toFixed(2)}</span>
                     </div>
                     <div className="card-actions">
-                        <button className="action-button">Manage Expenses</button>
-                        <button className="action-button">Manage Chores</button>
+                        <button className="action-button" onClick={() => navigate('/expenses')}>Manage Expenses</button>
+                        <button className="action-button" onClick={() => navigate('/chores')}>Manage Chores</button>
                     </div>
                 </div>
             </div>

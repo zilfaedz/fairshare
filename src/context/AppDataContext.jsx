@@ -18,8 +18,13 @@ export const AppDataProvider = ({ children }) => {
     const [chores, setChores] = useState([]);
     const [expenses, setExpenses] = useState([]);
     const [groups, setGroups] = useState([]);
+    const [budget, setBudget] = useState(0);
 
     // No persistence (localStorage removed)
+
+    const updateBudget = (newBudget) => {
+        setBudget(newBudget);
+    };
 
     const addChore = (chore) => {
         setChores([...chores, { ...chore, id: Date.now(), status: 'pending' }]);
@@ -111,7 +116,9 @@ export const AppDataProvider = ({ children }) => {
             chores,
             expenses,
             groups,
+            budget,
             updateUser,
+            updateBudget,
             addChore,
             updateChore,
             deleteChore,
