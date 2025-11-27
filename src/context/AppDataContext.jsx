@@ -49,6 +49,10 @@ export const AppDataProvider = ({ children }) => {
         ));
     };
 
+    const deleteChore = (id) => {
+        setChores(chores.filter(chore => chore.id !== id));
+    };
+
     const updateUser = (updatedUser) => {
         setUser({ ...user, ...updatedUser });
     };
@@ -110,6 +114,7 @@ export const AppDataProvider = ({ children }) => {
             updateUser,
             addChore,
             updateChore,
+            deleteChore,
             toggleChoreStatus,
             addExpense,
             markExpensePaid,

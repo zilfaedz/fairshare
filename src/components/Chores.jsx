@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAppData } from '../context/AppDataContext';
 
 const Chores = () => {
-    const { chores, addChore, updateChore, toggleChoreStatus } = useAppData();
+    const { chores, addChore, updateChore, deleteChore, toggleChoreStatus, groups } = useAppData();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [selectedChore, setSelectedChore] = useState(null);
@@ -52,6 +52,13 @@ const Chores = () => {
         setIsModalOpen(false);
     };
 
+    const handleDeleteClick = () => {
+        if (selectedChore) {
+            deleteChore(selectedChore.id);
+            setIsModalOpen(false);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         if (selectedChore) {
@@ -96,6 +103,11 @@ const Chores = () => {
         if (dateStr === tomorrow) return 'Tomorrow';
         return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
     };
+
+    // Get all unique members from all groups
+    const roommates = Array.from(new Set(
+        groups.flatMap(group => group.members.map(member => member.name))
+    )).sort();
 
     return (
         <div className="page-container">
@@ -185,6 +197,7 @@ const Chores = () => {
                                         <button className="action-button completed" onClick={handleCompleteClick}>Completed</button>
                                     )}
                                     <button className="action-button edit" onClick={handleEditClick}>Edit</button>
+                                    <button className="action-button delete" onClick={handleDeleteClick} style={{ backgroundColor: '#ff4444', color: 'white', marginLeft: '10px' }}>Delete</button>
                                 </div>
                             </div>
                         ) : (
@@ -210,12 +223,17 @@ const Chores = () => {
                                 </div>
                                 <div className="form-group">
                                     <label>Assigned Housemate</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         name="assignee"
                                         value={newChore.assignee}
                                         onChange={handleInputChange}
-                                    />
+                                        className="form-select"
+                                    >
+                                        <option value="">Select a housemate</option>
+                                        {roommates.map(name => (
+                                            <option key={name} value={name}>{name}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="form-row">
                                     <div className="form-group">
