@@ -17,8 +17,10 @@ const Layout = ({ children }) => {
         <div className="layout-container">
             <aside className="sidebar">
                 <div className="sidebar-header">
-                    <div className="logo-circle-small"></div>
-                    <h2 className="app-title-small">FairShare</h2>
+                    <Link to="/dashboard" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <div className="logo-circle-small"></div>
+                        <h2 className="app-title-small">FairShare</h2>
+                    </Link>
                 </div>
                 <nav className="sidebar-nav">
                     <Link to="/dashboard" className={`nav-item ${isActive('/dashboard') ? 'active' : ''}`}>

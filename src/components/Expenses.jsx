@@ -93,14 +93,14 @@ const Expenses = () => {
             <div className="page-header">
                 <div>
                     <h1>Expenses</h1>
-                    <p style={{ margin: 0, color: '#666' }}>Monthly Budget: <strong>${budget}</strong></p>
+                    <p style={{ margin: 0, color: '#666' }}>Monthly Budget: <strong>₱{budget}</strong></p>
                 </div>
                 <div className="header-actions">
                     <button className="add-button" onClick={() => setIsModalOpen(true)}>
                         + Add Expense
                     </button>
                     <button className="add-button" style={{ backgroundColor: '#FADADD', color: '#4A2C2C' }} onClick={handleBudgetClick}>
-                        Edit Budget
+                        Set Budget
                     </button>
                 </div>
             </div>
@@ -183,7 +183,7 @@ const Expenses = () => {
                             <div className="form-group">
                                 <label>Amount</label>
                                 <div className="amount-input-wrapper">
-                                    <span className="currency-symbol">$ ⌄</span>
+                                    <span className="currency-symbol">₱</span>
                                     <input
                                         type="number"
                                         name="amount"
@@ -245,14 +245,14 @@ const Expenses = () => {
                 <div className="modal-overlay">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h2>Edit Monthly Budget</h2>
+                            <h2>Set Monthly Budget</h2>
                             <button className="close-button" onClick={() => setIsBudgetModalOpen(false)}>×</button>
                         </div>
                         <form onSubmit={handleSaveBudget}>
                             <div className="form-group">
                                 <label>Budget Amount</label>
                                 <div className="amount-input-wrapper">
-                                    <span className="currency-symbol">$ ⌄</span>
+                                    <span className="currency-symbol">₱</span>
                                     <input
                                         type="number"
                                         value={tempBudget}
