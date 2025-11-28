@@ -53,7 +53,7 @@ const Layout = ({ children }) => {
                             ) : (
                                 <div className="user-avatar"></div>
                             )}
-                            <span className="user-name">{user.name}</span>
+                            <span className="user-name">{user.fullName}</span>
                         </Link>
                     </div>
                 </header>

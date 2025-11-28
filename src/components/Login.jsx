@@ -77,6 +77,7 @@ const Login = () => {
             {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
           <button type="submit" className="auth-button">Login</button>
+          {errors.submit && <div className="error-message" style={{ marginTop: '10px', textAlign: 'center' }}>{errors.submit}</div>}
         </form>
         <p className="auth-footer">
           Don't have an account? <Link to="/register">Register here</Link>

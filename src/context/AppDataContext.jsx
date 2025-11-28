@@ -61,10 +61,38 @@ export const AppDataProvider = ({ children }) => {
         setChores(chores.filter(chore => chore.id !== id));
     };
 
-    const updateUser = (updatedUser) => {
-        const newUser = { ...user, ...updatedUser };
-        setUser(newUser);
-        localStorage.setItem('user', JSON.stringify(newUser));
+    const updateUser = async (updatedUser) => {
+        try {
+            // If user has no ID (e.g. default mock user), just update local state
+            if (!user.id) {
+                const newUser = { ...user, ...updatedUser };
+                setUser(newUser);
+                localStorage.setItem('user', JSON.stringify(newUser));
+                return;
+            }
+
+            const response = await fetch(`http://localhost:8080/api/users/${user.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedUser),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update user');
+            }
+
+            const data = await response.json();
+            setUser(data);
+            localStorage.setItem('user', JSON.stringify(data));
+        } catch (error) {
+            console.error('Error updating user:', error);
+            // Fallback to local update if API fails (optional, but good for UX if backend is down)
+            const newUser = { ...user, ...updatedUser };
+            setUser(newUser);
+            localStorage.setItem('user', JSON.stringify(newUser));
+        }
     };
 
     // Group Management Functions
