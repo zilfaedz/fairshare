@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { loginUser } from '../api/users';
+import { useAppData } from '../context/AppDataContext';
+
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
+  const { updateUser } = useAppData();
 
   const validate = () => {
     const newErrors = {};
@@ -18,16 +22,23 @@ const Login = () => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-    // Handle login logic here
-    console.log('Login:', { email, password });
-    navigate('/dashboard');
+
+    try {
+      const user = await loginUser({ email, password });
+      updateUser(user);
+      console.log('Login successful');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Login failed:', error);
+      setErrors({ submit: 'Invalid email or password' });
+    }
   };
 
   return (

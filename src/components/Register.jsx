@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { createUser } from '../api/users';
+import { useAppData } from '../context/AppDataContext';
 
 const Register = () => {
     const [fullName, setFullName] = useState('');
@@ -8,6 +10,7 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const { updateUser } = useAppData();
 
     const validate = () => {
         const newErrors = {};
@@ -24,16 +27,23 @@ const Register = () => {
         return newErrors;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const validationErrors = validate();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
             return;
         }
-        // Handle registration logic here
-        console.log('Register:', { fullName, email, password });
-        navigate('/dashboard');
+
+        try {
+            const newUser = await createUser({ fullName, email, password });
+            updateUser(newUser);
+            console.log('User registered successfully');
+            navigate('/dashboard');
+        } catch (error) {
+            console.error('Registration failed:', error);
+            setErrors({ submit: 'Registration failed. Please try again.' });
+        }
     };
 
     return (

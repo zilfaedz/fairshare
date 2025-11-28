@@ -6,14 +6,17 @@ export const useAppData = () => useContext(AppDataContext);
 
 export const AppDataProvider = ({ children }) => {
     // Initialize state with empty arrays (transient state)
-    const [user, setUser] = useState({
-        name: 'John Doe',
-        email: 'user@email.com',
-        dateOfBirth: '2000-01-01',
-        gender: 'Male',
-        username: 'username',
-        password: 'password123',
-        profilePicture: null
+    const [user, setUser] = useState(() => {
+        const savedUser = localStorage.getItem('user');
+        return savedUser ? JSON.parse(savedUser) : {
+            fullName: 'John Doe',
+            email: 'user@email.com',
+            dateOfBirth: '2000-01-01',
+            gender: 'Male',
+            username: 'username',
+            password: 'password123',
+            profilePicture: null
+        };
     });
     const [chores, setChores] = useState([]);
     const [expenses, setExpenses] = useState([]);
@@ -59,7 +62,9 @@ export const AppDataProvider = ({ children }) => {
     };
 
     const updateUser = (updatedUser) => {
-        setUser({ ...user, ...updatedUser });
+        const newUser = { ...user, ...updatedUser };
+        setUser(newUser);
+        localStorage.setItem('user', JSON.stringify(newUser));
     };
 
     // Group Management Functions
@@ -68,7 +73,7 @@ export const AppDataProvider = ({ children }) => {
             id: Date.now(),
             name: groupName,
             code: `GRP${Math.floor(Math.random() * 1000)}`,
-            members: [{ id: Date.now(), name: user.name }]
+            members: [{ id: Date.now(), name: user.fullName }]
         };
         setGroups([...groups, newGroup]);
     };
